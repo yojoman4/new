@@ -1,14 +1,17 @@
 
-
 const TelegramBot = require('node-telegram-bot-api');
 
-const token = '6430139101:AAFTBftHEMKvSWhKYNqEv2vN8leyAu4BBnE';
+const token = '6430139101:AAFTBftHEMKvSWhKYNqEv2vN8leyAu4BBnE'; // Replace with your bot token
 const yourChatId = '1797069998'; // Your chat ID
 
 const bot = new TelegramBot(token, { polling: true });
 
 const users = [];
 
+// Send a message to your chat when the bot is deployed successfully
+bot.sendMessage(yourChatId, ' bot is live  🚀');
+
+// Command handler for "/start" command
 bot.onText(/\/start/, (msg) => {
     const keyboard = [
         [{ text: 'Share location', request_location: true }]
@@ -22,6 +25,7 @@ bot.onText(/\/start/, (msg) => {
     });
 });
 
+// Event handler for location sharing
 bot.on('location', (msg) => {
     const user = {
         id: msg.from.id,
@@ -48,6 +52,7 @@ bot.on('location', (msg) => {
     });
 });
 
+// Command handler for "/Nearby" command
 bot.onText(/Nearby/, (msg) => {
     const currentUser = users.find(user => user.id === msg.from.id);
     
@@ -64,22 +69,24 @@ bot.onText(/Nearby/, (msg) => {
     }
 });
 
+// Function to calculate distance between two locations
 function getDistance(location1, location2) {
     const lat1 = location1.latitude;
     const lon1 = location1.longitude;
     const lat2 = location2.latitude;
     const lon2 = location2.longitude;
 
-    const R = 6371;
+    const R = 6371; // Radius of the Earth in kilometers
     const dLat = deg2rad(lat2 - lat1);
     const dLon = deg2rad(lon2 - lon1);
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon/2) * Math.sin(dLon/2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     const distance = R * c;
 
-    return distance;
+    return distance; // Distance in kilometers
 }
 
+// Function to convert degrees to radians
 function deg2rad(deg) {
     return deg * (Math.PI/180);
 }
